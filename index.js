@@ -12,6 +12,7 @@ const randomDialogue = document.getElementById("random-dialogue");
 const randomDrawButton = document.getElementById("random-draw-button");
 const randomOutputField = document.getElementById("random-output-field");
 const randomTypeSelect = document.getElementById("random-type-select");
+const listNameField = document.getElementById("list-name");
 
 var storageList = { lists: [] };
 var currentList = [];
@@ -50,6 +51,15 @@ function randomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+function setListNameDisplay(name) {
+  if(!name) {
+    listNameField.textContent = "";
+    listNameField.style = "display: none;";
+  }
+  listNameField.textContent = name;
+  listNameField.style = "display: default;"
+}
+
 function saveAs() {
   if (saveAsButton.classList.contains("btn-danger")) {
     saveAsButton.classList.remove("btn-danger");
@@ -69,6 +79,7 @@ function saveAs() {
           "items": currentList
         });
         currentListName = saveAsInput.value;
+        setListNameDisplay(currentListName);
         saveAsInput.value = "";
         saveAsInput.disabled = true;
         saveAsDropdown.value = "none";
@@ -118,6 +129,7 @@ function refreshList() {
     item.classList.add("list-group-item");
     item.appendChild(text);
     mainList.appendChild(item);
+    setListNameDisplay(currentListName);
   }
 }
 

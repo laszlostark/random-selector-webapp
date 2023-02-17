@@ -8,7 +8,9 @@ This very simple SPA was created to create simple lists, save them in browser st
 - [ ] List management
   - [x] Creating, saving and loading lists
   - [ ] Editing, renaming, deleting lists
-- [x] Drawing random items from lists
+- [ ] Drawing random items from lists
+  - [x] Drawing single random items
+  - [ ] Drawing a sequence of random items
 - [ ] Exporting lists
   - [ ] csv
   - [ ] ...?
