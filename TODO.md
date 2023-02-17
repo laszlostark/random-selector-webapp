@@ -1,0 +1,6 @@
+- [ ] refactoring
+- [ ] random thingy
+- [ ] adjust design
+- [ ] testing testing testing
+- [ ] ???
+- [ ] production
