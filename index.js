@@ -11,6 +11,7 @@ const saveAsForm = document.getElementById("save-as-form");
 const randomDialogue = document.getElementById("random-dialogue");
 const randomDrawButton = document.getElementById("random-draw-button");
 const randomOutputField = document.getElementById("random-output-field");
+const randomTypeSelect = document.getElementById("random-type-select");
 
 var storageList = { lists: [] };
 var currentList = [];
@@ -29,22 +30,15 @@ function init() {
 
 function drawFromHat() {
   if(!currentHat) {
-    currentHat = currentList.slice().shuffleArray();
+    currentHat = currentList.slice()
   } else if(!currentList) return;
-  let randomItem = currentHat.shift();
+  let randomNum = randomInt(currentHat.length);
+  let randomItem = currentHat[randomNum];
+  currentHat.splice(randomNum, 1);
   if(currentHat.length < 1) {
-    currentHat = currentList.slice().shuffleArray();
+    currentHat = currentList.slice();
   }
   return randomItem;
-}
-
-const shuffleArray = array => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
 }
 
 
@@ -91,7 +85,7 @@ function saveAs() {
 function addToMainList() {
   addListItem(addToMainListInput.value);
   if(currentList) {
-    randomDialogue.style="";
+    randomDialogue.style="display: default;";
   }
   addToMainListInput.value = "";
 }
@@ -167,7 +161,15 @@ mainList.addEventListener("change", () => {
 })
 
 randomDrawButton.addEventListener("click", () => {
-
+  switch(randomTypeSelect.value) {
+    case "random-true":
+      randomOutputField.textContent = drawTrueRandom();
+      break;
+    case "random-hat":
+      console.log("random hat");
+      randomOutputField.textContent = drawFromHat();
+      break;
+  }
 })
 
 loadListDropdown.addEventListener("change", () => {
@@ -201,6 +203,7 @@ saveAsForm.addEventListener("submit", (e) => {
 loadListButton.addEventListener("click", () => {
   currentList = storageList.lists[loadListDropdown.value].items;
   currentListName = storageList.lists[loadListDropdown.value].name;
+  randomDialogue.style = "display: default;";
   refreshList();
 });
 
