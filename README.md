@@ -12,3 +12,8 @@ This very simple SPA was created to create simple lists, save them in browser st
 - [ ] Exporting lists
   - [ ] csv
   - [ ] ...?
+- [ ] Design changes
+  - [ ] Animations
+  - [ ] Settings section
+    - [ ] color theme
+    - [ ] ...?

@@ -30,7 +30,7 @@ function init() {
 
 function drawFromHat() {
   if(!currentHat) {
-    currentHat = currentList.slice()
+    currentHat = currentList.slice();
   } else if(!currentList) return;
   let randomNum = randomInt(currentHat.length);
   let randomItem = currentHat[randomNum];
@@ -155,18 +155,14 @@ function parseStorageList() {
   loadListDropdown.disabled = false;
 }
 
-// These are all event listeners
-mainList.addEventListener("change", () => {
-  alert("test");
-})
 
+// These are all event listeners
 randomDrawButton.addEventListener("click", () => {
   switch(randomTypeSelect.value) {
     case "random-true":
       randomOutputField.textContent = drawTrueRandom();
       break;
     case "random-hat":
-      console.log("random hat");
       randomOutputField.textContent = drawFromHat();
       break;
   }
@@ -191,6 +187,7 @@ saveAsDropdown.addEventListener("change", () => {
     saveAsButton.disabled = false;
   } else {
     saveAsInput.style = "display: none"
+    saveAsButton.disabled = false;
   }
 })
 
