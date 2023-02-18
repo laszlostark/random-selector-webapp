@@ -8,11 +8,15 @@ const randomDrawButton = document.getElementById("random-draw-button");
 const randomOutputField = document.getElementById("random-output-field");
 const randomTypeSelect = document.getElementById("random-type-select");
 const listNameInput = document.getElementById("list-name-input");
+const listSettingsButton = document.getElementById("list-settings-button");
+const saveConfirmButton = document.getElementById("save-confirm-button");
+const saveAbortButton = document.getElementById("save-abort-button");
 
 var storageList = { lists: [] };
 var currentList = [];
 var currentListName;
 var currentListGUID;
+var currentListIndex = "none";
 var currentHat;
 
 init();
@@ -56,16 +60,18 @@ function setListNameDisplay(name) {
   listNameInput.value = name;
 }
 
-function save(listUID) {
-  if(currentList.length < 1) return;
-  let list;
+function findListIndex(UID) {
   for(var i = 0 ; i < storageList.lists.length ; i++) {
-    if(storageList.lists[i].GUID == listUID) {
-      list = i;
-      break;
+    if(storageList.lists[i].GUID == UID) {
+      return i;
     }
   }
-  if(list) {
+}
+
+function save(listUID) {
+  if(currentList.length < 1) return;
+  let list = findListIndex(listUID);
+  if(list != undefined && list != NaN) {
     storageList.lists[list].items = currentList;
     storageList.lists[list].name = listNameInput.value;
   } else {
@@ -76,13 +82,17 @@ function save(listUID) {
     });
   }
   localStorage.list = JSON.stringify(storageList);
+  let newIndex = findListIndex(currentListGUID);
+  if(newIndex != NaN && newIndex != undefined) {
+    currentListIndex = newIndex;
+  }
   parseStorageList();
 }
 
 function addToMainList() {
   addListItem(addToMainListInput.value);
   if(currentList) {
-    randomDialogue.style="display: default;";
+    randomDialogue.style="";
   }
   if(currentListName) {
     save(currentListGUID);
@@ -101,7 +111,7 @@ function addListItem(newItem) {
 }
 
 function addListViewOption(text, value) {
-  if (!text || !value) return;
+  if (!text || value == NaN || value == undefined) return;
   let listOption = document.createElement('option');
   let optionText = document.createTextNode(text);
   listOption.value = value;
@@ -110,6 +120,7 @@ function addListViewOption(text, value) {
 }
 
 function refreshList() {
+  loadListDropdown.value = currentListIndex;
   mainList.textContent = '';
   //for (i in currentList) {
   currentList.forEach((e,i) => {
@@ -142,6 +153,7 @@ function parseStorageList() {
     addListViewOption(e.name, index);
   })
   loadListDropdown.disabled = false;
+  loadListDropdown.value = currentListIndex;
 }
 
 function loadList(index) {
@@ -151,20 +163,46 @@ function loadList(index) {
   currentList = storageList.lists[index].items;
   currentListName = storageList.lists[index].name;
   currentListGUID = storageList.lists[index].GUID;
-  randomDialogue.style = "display: default;";
+  randomDialogue.style = "";
+  currentListIndex = index;
   refreshList();
 }
 
 
 // These are all event listeners
-listNameInput.addEventListener("change", () => {
+saveConfirmButton.addEventListener("click", () => {
   if(listNameInput.value) {
     currentListName = listNameInput.value;
+    save(currentListGUID);
+    listNameInput.value = currentListName;
+    listNameInput.dispatchEvent(new Event('input', {bubbles:true}));
+  }
+})
+
+saveAbortButton.addEventListener("click", () => {
+  if(currentListName) {
+    listNameInput.value = currentListName;
+    listNameInput.dispatchEvent(new Event('input', {bubbles:true}));
+  } else {
+    listNameInput.value = "";
+    listNameInput.dispatchEvent(new Event('input', {bubbles:true}));
+  }
+})
+
+listNameInput.addEventListener("input", () => {
+  if(listNameInput.value != currentListName && listNameInput.value) {
+    listSettingsButton.style = "display: none;"
+    saveConfirmButton.style = "";
+    saveAbortButton.style = "";
+  } else {
+    saveConfirmButton.style = "display: none;"
+    saveAbortButton.style = "display: none;"
+    listSettingsButton.style = "width: 4em;";
   }
 })
 
 randomDrawButton.addEventListener("click", () => {
-  randomOutputField.parentElement.style = "height: 4.5em; display: default;";
+  randomOutputField.parentElement.style = "height: 4.5em;";
   switch(randomTypeSelect.value) {
     case "random-true":
       randomOutputField.textContent = drawTrueRandom();

@@ -11,7 +11,7 @@ This very simple SPA was created to create simple lists, save them in browser st
 - [ ] Drawing random items from lists
   - [x] Drawing single random items
   - [ ] Drawing a sequence of random items
-- [ ] Exporting lists
+- [ ] Exporting/importing lists
   - [ ] csv
   - [ ] ...?
 - [ ] Design changes
