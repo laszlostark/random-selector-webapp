@@ -21,7 +21,7 @@
       <div class="input-group my-2">
         <select id="load-list-dropdown" disabled class="form-select ps-3">
         </select>
-        <button disabled id="load-list-button" class="btn btn-sm btn-primary fixed-width-button-lg">Load</button>
+        <button disabled id="load-list-button" class="btn btn-sm btn-primary fixed-width-button-lg"><i class="bi bi-folder-fill"></i></button>
       </div>
     </div>
     <div class="col-2 col-lg-4 col-xxl-5">
@@ -39,7 +39,7 @@
               <option value="random-true">True random</option>
               <option value="random-hat">Distributed random</option>
             </select>
-            <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button">Draw</button>
+            <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button"><i class="bi bi-chevron-double-right"></i></button>
           </div>
           <div class="card-body text-center align-items-center hide" style="height: 4.5em;">
             <span id="random-output-field"></span>
@@ -61,12 +61,12 @@
               <button id="save-abort-button"
                 class="btn btn-warning hide fixed-width-button-sm rounded-end p-0 m-0">
                 <i class="bi bi-arrow-counterclockwise"></i></button>
-              <button id="list-edit-button" class="btn btn-outline-secondary fixed-width-button-lg" type="button">
+              <button id="list-edit-button" class="btn btn-secondary fixed-width-button-lg" disabled type="button">
                 <i class="bi bi-gear-fill"></i></button>
             </div>
             <form autocomplete="off" id="add-to-main-list-form" class="input-group">
               <input type="text" placeholder="Add item..." class="form-control ps-3" id="add-to-main-list-input">
-              <button class="btn btn-primary fixed-width-button-lg" id="add-to-main-list-button">Add</button>
+              <button class="btn btn-primary fixed-width-button-lg" id="add-to-main-list-button"><i class="bi bi-plus-circle-fill"></i></button>
             </form>
             <ul class="list-group mt-2" id="main-list">
             </ul>
@@ -90,8 +90,10 @@
               <button id="edit-confirm-button" class="btn fixed-width-button-sm btn-success rounded-end p-0 m-0">
                 <i class="bi bi-check-lg"></i></button>
             </div>
-            <ul class="list-group mt-2" id="edit-list"></ul>
+            <ul class="list-group mt-2" id="edit-list">
+            </ul>
           </div>
+
         </div>
       </div>
     </div>

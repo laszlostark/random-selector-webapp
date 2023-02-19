@@ -19,3 +19,9 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] Settings section
     - [ ] color theme
     - [ ] ...?
+
+
+## TODO:
+- [ ] Saving system
+  - [ ] Change save() method to accept lists as input
+- [ ] 

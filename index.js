@@ -25,6 +25,7 @@ var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
 var workingListCopy;
+var markForDeletion = [];
 
 init();
 
@@ -33,6 +34,7 @@ function init() {
   loadListDropdown.value = "none";
   loadListButton.disabled = true;
   listNameInput.value = "";
+  listEditButton.disabled = true;
   parseStorageList();
 }
 
@@ -94,6 +96,11 @@ function save(listUID) {
   if (newIndex != NaN && newIndex != undefined) {
     currentListIndex = newIndex;
   }
+  if(currentListGUID) {
+    listEditButton.disabled = false;
+  } else {
+    listEditButton.disabled = true;
+  }
   parseStorageList();
 }
 
@@ -128,6 +135,11 @@ function addListViewOption(text, value) {
 }
 
 function refreshList() {
+  if(currentList.length > 0) {
+    listEditButton.disabled = false;
+  } else {
+    listEditButton.disabled = true;
+  }
   loadListDropdown.value = currentListIndex;
   mainList.textContent = '';
   //for (i in currentList) {
@@ -141,20 +153,55 @@ function refreshList() {
   setListNameDisplay(currentListName);
 }
 
+function createEditItem() {
+  let editItem = document.createElement("li");
+  let checkbox = document.createElement("input");
+  let deleteItemsButton = document.createElement("button");
+  let deleteItemsIcon = document.createElement("i");
+  let deleteSectionSpan = document.createElement("span");
+  deleteItemsIcon.classList.add("bi", "bi-trash-fill");
+  deleteItemsButton.classList.add("btn", "btn-danger");
+  editItem.classList.add("d-flex", "p-3");
+  deleteSectionSpan.classList.add("d-flex", "ms-auto");
+  checkbox.classList.add("form-check-input", "align-self-center", "ms-2");
+  checkbox.type = "checkbox";
+  checkbox.addEventListener("change", editSelectAll);
+  deleteItemsButton.appendChild(deleteItemsIcon);
+  deleteSectionSpan.appendChild(deleteItemsButton);
+  deleteSectionSpan.appendChild(checkbox);
+  editItem.appendChild(deleteSectionSpan);
+  return editItem;
+}
+
 function populateEditView() {
   editList.textContent = "";
   workingListCopy = currentList.slice(0);
   workingListCopy.forEach((e, i) => {
-    let text = document.createTextNode(`${parseInt(i) + 1}. ${e}`);
+    let text = `${parseInt(i) + 1}. ${e}`;
     let checkbox = document.createElement("input");
-    checkbox.classList.add("btn-check");
+    let itemName = document.createElement("input");
+    let inputGroup = document.createElement("div");
+    inputGroup.classList.add("input-group");
+    itemName.classList.add("form-control", "rounded");
+    checkbox.classList.add("form-check-input", "rounded", "align-self-center", "ms-2");
+    checkbox.addEventListener("change", editSelectSingle);
+    checkbox.value = i;
+    itemName.value = text;
+    itemName.type = "text";
     checkbox.type = "checkbox";
     checkbox.id = `edit-list-select-${i}`;
     let item = document.createElement("li");
     item.classList.add("list-group-item");
-    item.appendChild(text);
+    inputGroup.appendChild(itemName);
+    inputGroup.appendChild(checkbox);
+    item.appendChild(inputGroup);
+    if((workingListCopy.length - 1) == i) {
+      item.classList.add("rounded-bottom");
+    }
     editList.appendChild(item);
   })
+  let editItem = createEditItem();
+  editList.appendChild(editItem);
   editListNameInput.value = currentListName;
 }
 
@@ -223,6 +270,20 @@ function saveAbort() {
     listNameInput.value = "";
     listNameInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
+}
+
+function editCheckAll(value) {
+  if(!value) {
+    markForDeletion = [];
+  } else {
+    markForDeletion = "all";
+  }
+  if(!workingListCopy) {return};
+  editList.childNodes.forEach((e, i)=>{
+    if(e.childNodes[0].childNodes[1]) {
+      e.childNodes[0].childNodes[1].checked = value;
+    }
+  });
 }
 
 // These are all event listeners
@@ -308,3 +369,17 @@ addToMainListForm.addEventListener("submit", (e) => {
   e.preventDefault();
   addToMainList();
 });
+
+function editSelectAll(event) {
+  editCheckAll(event.target.checked);
+}
+
+function editSelectSingle(event) {
+  let index = parseInt(event.target.value);
+  if(event.target.checked) {
+    markForDeletion[index] = index;
+  } else {
+    markForDeletion[index] = null;
+  }
+  console.log(markForDeletion)
+}
