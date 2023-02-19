@@ -1,0 +1,11 @@
+.fixed-width-button-lg {
+  width: 4em;
+}
+
+.fixed-width-button-sm {
+  width: 2em;
+}
+
+.hide {
+  display: none;
+}
