@@ -24,4 +24,7 @@ This very simple SPA was created to create simple lists, save them in browser st
 ## TODO:
 - [ ] Saving system
   - [ ] Change save() method to accept lists as input
-- [ ] 
+
+
+## FIXME:
+- [ ] Can't delete all in edit view when first item(s) has/have been removed

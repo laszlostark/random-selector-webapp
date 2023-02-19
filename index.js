@@ -41,7 +41,7 @@ function init() {
 function drawFromHat() {
   if (!currentHat) {
     currentHat = currentList.slice(0);
-  } else if (!currentList) {return};
+  } else if (!currentList) { return };
   let randomNum = randomInt(currentHat.length);
   let randomItem = currentHat[randomNum];
   currentHat.splice(randomNum, 1);
@@ -76,14 +76,14 @@ function findListIndex(UID) {
   }
 }
 
-function save(listUID) {
+function save(listUID, name) {
   if (!currentListGUID) {
     currentListGUID = listUID;
   }
   let list = findListIndex(listUID);
   if (list != undefined && list != NaN) {
     storageList.lists[list].items = currentList;
-    storageList.lists[list].name = listNameInput.value;
+    storageList.lists[list].name = name;
   } else {
     storageList.lists.push({
       GUID: listUID,
@@ -96,7 +96,7 @@ function save(listUID) {
   if (newIndex != NaN && newIndex != undefined) {
     currentListIndex = newIndex;
   }
-  if(currentListGUID) {
+  if (currentListGUID) {
     listEditButton.disabled = false;
   } else {
     listEditButton.disabled = true;
@@ -110,13 +110,13 @@ function addToMainList() {
     show(randomDialogue);
   }
   if (currentListGUID) {
-    save(currentListGUID);
+    save(currentListGUID, currentListName);
   }
   addToMainListInput.value = "";
 }
 
 function addListItem(newItem) {
-  if (!newItem) {return};
+  if (!newItem) { return };
   currentList.push(newItem);
   let listItem = document.createElement('li');
   listItem.classList.add("list-group-item");
@@ -126,7 +126,7 @@ function addListItem(newItem) {
 }
 
 function addListViewOption(text, value) {
-  if (!text || value == NaN || value == undefined) {return};
+  if (!text || value == NaN || value == undefined) { return };
   let listOption = document.createElement('option');
   let optionText = document.createTextNode(text);
   listOption.value = value;
@@ -135,7 +135,7 @@ function addListViewOption(text, value) {
 }
 
 function refreshList() {
-  if(currentList.length > 0) {
+  if (currentList.length > 0) {
     listEditButton.disabled = false;
   } else {
     listEditButton.disabled = true;
@@ -166,6 +166,7 @@ function createEditItem() {
   checkbox.classList.add("form-check-input", "align-self-center", "ms-2");
   checkbox.type = "checkbox";
   checkbox.addEventListener("change", editSelectAll);
+  deleteItemsButton.addEventListener("click", editDeleteItems);
   deleteItemsButton.appendChild(deleteItemsIcon);
   deleteSectionSpan.appendChild(deleteItemsButton);
   deleteSectionSpan.appendChild(checkbox);
@@ -174,28 +175,38 @@ function createEditItem() {
 }
 
 function populateEditView() {
-  editList.textContent = "";
   workingListCopy = currentList.slice(0);
+  refreshEditList();
+}
+
+function refreshEditList() {
+  editList.textContent = "";
   workingListCopy.forEach((e, i) => {
-    let text = `${parseInt(i) + 1}. ${e}`;
+    let index = `${parseInt(i) + 1}.`;
+    let text = e;
     let checkbox = document.createElement("input");
-    let itemName = document.createElement("input");
+    let itemNameInput = document.createElement("input");
+    let itemIndexLabel = document.createElement("div");
     let inputGroup = document.createElement("div");
+    itemIndexLabel.classList.add("align-self-center", "me-2");
     inputGroup.classList.add("input-group");
-    itemName.classList.add("form-control", "rounded");
+    itemNameInput.classList.add("form-control", "rounded");
+    itemNameInput.index = i;
     checkbox.classList.add("form-check-input", "rounded", "align-self-center", "ms-2");
     checkbox.addEventListener("change", editSelectSingle);
+    itemNameInput.addEventListener("input", itemNameChange);
+    itemIndexLabel.textContent = index;
     checkbox.value = i;
-    itemName.value = text;
-    itemName.type = "text";
+    itemNameInput.value = text;
+    itemNameInput.type = "text";
     checkbox.type = "checkbox";
-    checkbox.id = `edit-list-select-${i}`;
     let item = document.createElement("li");
     item.classList.add("list-group-item");
-    inputGroup.appendChild(itemName);
+    inputGroup.appendChild(itemIndexLabel);
+    inputGroup.appendChild(itemNameInput);
     inputGroup.appendChild(checkbox);
     item.appendChild(inputGroup);
-    if((workingListCopy.length - 1) == i) {
+    if ((workingListCopy.length - 1) == i) {
       item.classList.add("rounded-bottom");
     }
     editList.appendChild(item);
@@ -220,7 +231,7 @@ function parseStorageList() {
     storageList = JSON.parse(localStorage.list);
   }
   populateListDefaults();
-  if (!localStorage.list) {return};
+  if (!localStorage.list) { return };
   storageList.lists.forEach((e, index) => {
     addListViewOption(e.name, index);
   })
@@ -235,18 +246,18 @@ function loadList(index) {
   currentList = storageList.lists[index].items;
   currentListName = storageList.lists[index].name;
   currentListGUID = storageList.lists[index].GUID;
-  if (currentList.length > 0) {show(randomDialogue)};
+  if (currentList.length > 0) { show(randomDialogue) };
   currentListIndex = index;
   refreshList();
 }
 
 function hide(element) {
-  if (!element) {return};
+  if (!element) { return };
   element.classList.add("hide");
 }
 
 function show(element) {
-  if (!element) {return};
+  if (!element) { return };
   element.classList.remove("hide");
 }
 
@@ -256,7 +267,7 @@ function saveConfirm() {
   }
   if (listNameInput.value) {
     currentListName = listNameInput.value;
-    save(currentListGUID);
+    save(currentListGUID, currentListName);
     listNameInput.value = currentListName;
     listNameInput.dispatchEvent(new Event('input', { bubbles: true }));
   }
@@ -273,14 +284,14 @@ function saveAbort() {
 }
 
 function editCheckAll(value) {
-  if(!value) {
+  if (!value) {
     markForDeletion = [];
   } else {
     markForDeletion = "all";
   }
-  if(!workingListCopy) {return};
-  editList.childNodes.forEach((e, i)=>{
-    if(e.childNodes[0].childNodes[1]) {
+  if (!workingListCopy) { return };
+  editList.childNodes.forEach((e, i) => {
+    if (e.childNodes[0].childNodes[1]) {
       e.childNodes[0].childNodes[1].checked = value;
     }
   });
@@ -291,9 +302,10 @@ editConfirmButton.addEventListener("click", () => {
   currentList = workingListCopy;
   currentListName = editListNameInput.value;
   workingListCopy = undefined;
-  save(currentListGUID);
+  save(currentListGUID, currentListName);
   hide(editView);
   show(mainListView);
+  refreshList();
 });
 
 editAbortButton.addEventListener("click", () => {
@@ -303,7 +315,7 @@ editAbortButton.addEventListener("click", () => {
 });
 
 listEditButton.addEventListener("click", () => {
-  if (!currentListGUID) {return};
+  if (!currentListGUID) { return };
   populateEditView();
   hide(mainListView);
   show(editView);
@@ -360,7 +372,7 @@ loadListButton.addEventListener("click", () => {
 });
 
 addToMainListInput.addEventListener("keyup", (ev) => {
-  if(ev.key == "Escape") {
+  if (ev.key == "Escape") {
     addToMainListInput.value = "";
   }
 })
@@ -376,10 +388,30 @@ function editSelectAll(event) {
 
 function editSelectSingle(event) {
   let index = parseInt(event.target.value);
-  if(event.target.checked) {
+  if (event.target.checked) {
     markForDeletion[index] = index;
   } else {
     markForDeletion[index] = null;
   }
-  console.log(markForDeletion)
+}
+
+function editDeleteItems() {
+  tempArray = workingListCopy.slice(0);
+  markForDeletion.forEach((e) => {
+    if (e != null) {
+      tempArray[e] = null;
+    }
+  })
+  workingListCopy = [];
+  tempArray.forEach((e) => {
+    if (e != null) {
+      workingListCopy.push(e);
+    }
+  })
+  markForDeletion = [];
+  refreshEditList();
+}
+
+function itemNameChange(event) {
+  workingListCopy[event.target.index] = event.target.value;
 }
