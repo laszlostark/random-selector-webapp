@@ -26,3 +26,5 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] Change save() method to accept lists as input
 - [ ] Edit system
   - [ ] Delete entire list
+- [ ] Randomization
+  - [ ] exclusion of items from randomization without deletion from the list
