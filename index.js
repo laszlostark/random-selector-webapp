@@ -17,10 +17,12 @@ const editConfirmButton = document.getElementById("edit-confirm-button");
 const editAbortButton = document.getElementById("edit-abort-button");
 const editListNameInput = document.getElementById("edit-list-name-input");
 const mainListView = document.getElementById("main-list-view");
+const newListButton = document.getElementById("new-list-button");
+const themeToggle = document.getElementById("theme-toggle");
 
 var storageList = { lists: [] };
 var currentList = [];
-var currentListName;
+var currentListName = "";
 var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
@@ -31,11 +33,20 @@ init();
 
 
 function init() {
+  initTheme();
   loadListDropdown.value = "none";
   loadListButton.disabled = true;
   listNameInput.value = "";
   listEditButton.disabled = true;
   parseStorageList();
+}
+
+function initTheme() {
+  themeToggle.checked = localStorage.theme != "light";
+  if(!localStorage.theme) {
+    localStorage.theme = "dark";
+  }
+  setTheme(localStorage.theme);
 }
 
 function drawFromHat() {
@@ -76,6 +87,20 @@ function findListIndex(UID) {
   }
 }
 
+function saveToLocalStorage(lists) {
+  localStorage.list = JSON.stringify(lists);
+}
+
+function deleteList(listUID) {
+  let temp = storageList.lists.slice(0);
+  storageList.lists.forEach((e, i) => {
+    if(e.GUID == listUID) {
+      temp.splice(i);
+    }
+  })
+  return {lists: temp};
+}
+
 function save(listUID, name) {
   if (!currentListGUID) {
     currentListGUID = listUID;
@@ -91,7 +116,7 @@ function save(listUID, name) {
       items: currentList
     });
   }
-  localStorage.list = JSON.stringify(storageList);
+  saveToLocalStorage(storageList);
   let newIndex = findListIndex(currentListGUID);
   if (newIndex != NaN && newIndex != undefined) {
     currentListIndex = newIndex;
@@ -142,7 +167,6 @@ function refreshList() {
   }
   loadListDropdown.value = currentListIndex;
   mainList.textContent = '';
-  //for (i in currentList) {
   currentList.forEach((e, i) => {
     let text = document.createTextNode(`${parseInt(i) + 1}. ${e}`);
     let item = document.createElement('li');
@@ -159,17 +183,23 @@ function createEditItem() {
   let deleteItemsButton = document.createElement("button");
   let deleteItemsIcon = document.createElement("i");
   let deleteSectionSpan = document.createElement("span");
+  let deleteListButton = document.createElement("button");
   deleteItemsIcon.classList.add("bi", "bi-trash-fill");
   deleteItemsButton.classList.add("btn", "btn-danger");
+  deleteListButton.classList.add("btn", "btn-warning", "ms-auto", "fixed-width-button-xl");
+  deleteListButton.textContent = "Delete list"
+  deleteListButton.value = "0";
   editItem.classList.add("d-flex", "p-3");
   deleteSectionSpan.classList.add("d-flex", "ms-auto");
   checkbox.classList.add("form-check-input", "align-self-center", "ms-2");
   checkbox.type = "checkbox";
   checkbox.addEventListener("change", editSelectAll);
   deleteItemsButton.addEventListener("click", editDeleteItems);
+  deleteListButton.addEventListener("click", editDeleteList);
   deleteItemsButton.appendChild(deleteItemsIcon);
   deleteSectionSpan.appendChild(deleteItemsButton);
   deleteSectionSpan.appendChild(checkbox);
+  editItem.appendChild(deleteListButton);
   editItem.appendChild(deleteSectionSpan);
   return editItem;
 }
@@ -226,12 +256,21 @@ function populateListDefaults() {
   loadListDropdown.value = "none";
 }
 
+function createNewList() {
+  currentList = [];
+  currentListIndex = "none";
+  currentListName = "";
+  currentListGUID = undefined;
+  loadListDropdown.value = "none";
+  refreshList();
+  hide(randomDialogue);
+}
+
 function parseStorageList() {
+  populateListDefaults();
   if (localStorage.list) {
     storageList = JSON.parse(localStorage.list);
-  }
-  populateListDefaults();
-  if (!localStorage.list) { return };
+  } else {return;}
   storageList.lists.forEach((e, index) => {
     addListViewOption(e.name, index);
   })
@@ -297,21 +336,46 @@ function editCheckAll(value) {
   });
 }
 
+function showEditView() {
+  hide(editView);
+  show(mainListView);
+}
+
+function showMainListView() {
+  hide(editView);
+  show(mainListView);
+}
+
+function setTheme(mode) {
+  document.getElementById("html-element").setAttribute("data-bs-theme", mode);
+}
+
 // These are all event listeners
+themeToggle.addEventListener("change", () => {
+  let mode;
+  if(themeToggle.checked) {
+    mode = "dark";
+  } else {
+    mode = "light";
+  }
+  localStorage.theme = mode;
+  setTheme(mode);
+})
+
+newListButton.addEventListener("click", createNewList);
+
 editConfirmButton.addEventListener("click", () => {
   currentList = workingListCopy;
   currentListName = editListNameInput.value;
   workingListCopy = undefined;
   save(currentListGUID, currentListName);
-  hide(editView);
-  show(mainListView);
+  showMainListView()
   refreshList();
 });
 
 editAbortButton.addEventListener("click", () => {
   workingListCopy = undefined;
-  hide(editView);
-  show(mainListView);
+  showEditView();
 });
 
 listEditButton.addEventListener("click", () => {
@@ -419,4 +483,20 @@ function editDeleteItems() {
 
 function itemNameChange(event) {
   workingListCopy[event.target.index] = event.target.value;
+}
+
+function editDeleteList(event) {
+  let btn = event.target;
+  if(btn.value == "0") {
+    btn.classList.remove("btn-warning");
+    btn.classList.add("btn-danger");
+    btn.textContent = "For realsies?"
+    btn.value = "1";
+    return;
+  }
+  let newList = deleteList(currentListGUID);
+  saveToLocalStorage(newList);
+  parseStorageList();
+  createNewList();
+  showMainListView();
 }

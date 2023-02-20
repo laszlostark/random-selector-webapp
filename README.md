@@ -7,7 +7,7 @@ This very simple SPA was created to create simple lists, save them in browser st
 ## Feature set:
 - [ ] List management
   - [x] Creating, saving and loading lists
-  - [ ] Editing, renaming, deleting lists
+  - [x] Editing, renaming, deleting lists
 - [ ] Drawing random items from lists
   - [x] Drawing single random items
   - [ ] Drawing a sequence of random items
@@ -16,15 +16,12 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] ...?
 - [ ] Design changes
   - [ ] Animations
-  - [ ] Settings section
-    - [ ] color theme
-    - [ ] ...?
+  - [ ] Theme toggle
 
 
 ## TODO:
 - [ ] Saving system
   - [ ] Change save() method to accept lists as input
-- [ ] Edit system
-  - [ ] Delete entire list
 - [ ] Randomization
   - [ ] exclusion of items from randomization without deletion from the list
+- [ ] Make everything less dependent on global variables 

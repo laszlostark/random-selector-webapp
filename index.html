@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html id="html-element" lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="utf-8">
@@ -13,18 +13,36 @@
 
 <body>
   <!-- Navbar -->
-  <div class="navbar navbar-dark bg-dark border-bottom border-primary justify-content-center rounded-bottom-3">
+  <div id="navbar" class="navbar border-bottom border-primary justify-content-center rounded-bottom-3">
     <div class="col-2 col-lg-4 col-xxl-5 ps-2">
-      <img src="lazrfish logo favicon.png" style="height:3em; user-select: none; pointer-events: none;">
+      <div class="input-group">
+        <img src="lazrfish logo favicon.png" style="height:3em; user-select: none; pointer-events: none;">
+        <div class="card rounded p-0 ms-2">
+          <div class="card-body p-2 m-0 d-flex">
+            <div class="form-check form-switch m-0 align-self-center">
+              <input type="checkbox" class="form-check-input" id="theme-toggle">
+              <label for="themeToggle" class="form-check-label">
+                <i class="bi bi-moon-stars"></i>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-8 col-lg-4 col-xxl-2">
       <div class="input-group my-2">
         <select id="load-list-dropdown" disabled class="form-select ps-3">
         </select>
-        <button disabled id="load-list-button" class="btn btn-sm btn-primary fixed-width-button-lg"><i class="bi bi-folder-fill"></i></button>
+        <button disabled id="load-list-button" class="btn btn-sm btn-primary fixed-width-button-lg"><i
+            class="bi bi-folder-fill"></i></button>
       </div>
     </div>
     <div class="col-2 col-lg-4 col-xxl-5">
+      <div class="">
+        <button id="new-list-button" class="btn btn-primary ms-3">
+          <i class="bi bi-file-earmark-plus"></i>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -39,7 +57,8 @@
               <option value="random-true">True random</option>
               <option value="random-hat">Distributed random</option>
             </select>
-            <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button"><i class="bi bi-chevron-double-right"></i></button>
+            <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button"><i
+                class="bi bi-chevron-double-right"></i></button>
           </div>
           <div class="card-body text-center align-items-center hide" style="height: 4.5em;">
             <span id="random-output-field"></span>
@@ -55,18 +74,17 @@
           <div class="card-body">
             <div class="input-group mb-2">
               <input id="list-name-input" type="text" class="form-control" placeholder="List name...">
-              <button id="save-confirm-button"
-                class="btn btn-success hide fixed-width-button-sm p-0 m-0">
+              <button id="save-confirm-button" class="btn btn-success hide fixed-width-button-sm p-0 m-0">
                 <i class="bi bi-check-lg"></i></button>
-              <button id="save-abort-button"
-                class="btn btn-warning hide fixed-width-button-sm rounded-end p-0 m-0">
+              <button id="save-abort-button" class="btn btn-warning hide fixed-width-button-sm rounded-end p-0 m-0">
                 <i class="bi bi-arrow-counterclockwise"></i></button>
               <button id="list-edit-button" class="btn btn-secondary fixed-width-button-lg" disabled type="button">
                 <i class="bi bi-gear-fill"></i></button>
             </div>
             <form autocomplete="off" id="add-to-main-list-form" class="input-group">
               <input type="text" placeholder="Add item..." class="form-control ps-3" id="add-to-main-list-input">
-              <button class="btn btn-primary fixed-width-button-lg" id="add-to-main-list-button"><i class="bi bi-plus-circle"></i></button>
+              <button class="btn btn-primary fixed-width-button-lg" id="add-to-main-list-button"><i
+                  class="bi bi-plus-circle"></i></button>
             </form>
             <ul class="list-group mt-2" id="main-list">
             </ul>
