@@ -291,8 +291,8 @@ function editCheckAll(value) {
   }
   if (!workingListCopy) { return };
   editList.childNodes.forEach((e, i) => {
-    if (e.childNodes[0].childNodes[1]) {
-      e.childNodes[0].childNodes[1].checked = value;
+    if (e.childNodes[0].childNodes[2] && e.childNodes[0].childNodes[2].classList.contains("form-check-input")) {
+      e.childNodes[0].childNodes[2].checked = value;
     }
   });
 }
@@ -348,7 +348,7 @@ listNameInput.addEventListener("keyup", (ev) => {
 })
 
 randomDrawButton.addEventListener("click", () => {
-  show(randomOutputField);
+  show(randomOutputField.parentElement);
   switch (randomTypeSelect.value) {
     case "random-true":
       randomOutputField.textContent = drawTrueRandom();
@@ -396,6 +396,11 @@ function editSelectSingle(event) {
 }
 
 function editDeleteItems() {
+  if(markForDeletion = "all") {
+    workingListCopy = [];
+    refreshEditList();
+    return;
+  }
   tempArray = workingListCopy.slice(0);
   markForDeletion.forEach((e) => {
     if (e != null) {
