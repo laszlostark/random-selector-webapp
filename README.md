@@ -24,6 +24,7 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] Change save() method to accept lists as input
 - [ ] Randomization
   - [ ] exclusion of items from randomization without deletion from the list
+  - [ ] generating a sequence of random items where each item is aprox. equally often included but not necessarily equally distributed
 - [ ] Make everything less dependent on global variables
 
 ## FIXME:
