@@ -24,4 +24,8 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] Change save() method to accept lists as input
 - [ ] Randomization
   - [ ] exclusion of items from randomization without deletion from the list
-- [ ] Make everything less dependent on global variables 
+- [ ] Make everything less dependent on global variables
+
+## FIXME:
+- [ ] Can't delete individual list items without deleting whole list content
+- [ ] Can't edit list with no items in it
