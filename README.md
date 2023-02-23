@@ -5,7 +5,7 @@ This very simple SPA was created to create simple lists, save them in browser st
 
 
 ## Feature set:
-- [ ] List management
+- [x] List management
   - [x] Creating, saving and loading lists
   - [x] Editing, renaming, deleting lists
 - [ ] Drawing random items from lists
@@ -16,7 +16,7 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] ...?
 - [ ] Design changes
   - [ ] Animations
-  - [ ] Theme toggle
+  - [x] Theme toggle
 
 
 ## TODO:
@@ -26,7 +26,4 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] exclusion of items from randomization without deletion from the list
   - [ ] generating a sequence of random items where each item is aprox. equally often included but not necessarily equally distributed
 - [ ] Make everything less dependent on global variables
-
-## FIXME:
-- [ ] Can't delete individual list items without deleting whole list content
-- [ ] Can't edit list with no items in it
+- [ ] Merge Feature set and TODO list in readme, I'm just too lazy at this point
