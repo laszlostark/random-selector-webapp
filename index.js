@@ -460,7 +460,7 @@ function editSelectSingle(event) {
 }
 
 function editDeleteItems() {
-  if(markForDeletion = "all") {
+  if(markForDeletion == "all") {
     workingListCopy = [];
     refreshEditList();
     return;
