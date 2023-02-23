@@ -160,7 +160,7 @@ function addListViewOption(text, value) {
 }
 
 function refreshList() {
-  if (currentList.length > 0) {
+  if (!currentList.GUID) {
     listEditButton.disabled = false;
   } else {
     listEditButton.disabled = true;
