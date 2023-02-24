@@ -20,6 +20,8 @@ const mainListView = document.getElementById("main-list-view");
 const newListButton = document.getElementById("new-list-button");
 const themeToggle = document.getElementById("theme-toggle");
 
+const SAVING_PROTOCOL_VERSION = "1.0";
+
 var storageList = { lists: [] };
 var currentList = [];
 var currentListName = "";
@@ -106,6 +108,7 @@ function findListIndex(UID) {
 }
 
 function saveToLocalStorage(lists) {
+  localStorage.savingProtocolVersion = SAVING_PROTOCOL_VERSION;
   localStorage.list = JSON.stringify(lists);
 }
 
@@ -285,6 +288,13 @@ function createNewList() {
 }
 
 function parseStorageList() {
+  if(localStorage.savingProtocolVersion) {
+    console.log(`Loaded from local storage with saving protocol version: ${localStorage.savingProtocolVersion}`)
+  } else if(localStorage.list) {
+    console.log(`Loaded from local storage with unknown saving protocol version.`);
+  } else {
+    console.log(`Local storage did not have any lists saved.`);
+  }
   populateListDefaults();
   if (localStorage.list) {
     storageList = JSON.parse(localStorage.list);

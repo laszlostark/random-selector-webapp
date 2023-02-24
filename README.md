@@ -27,3 +27,12 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] generating a sequence of random items where each item is aprox. equally often included but not necessarily equally distributed
 - [ ] Make everything less dependent on global variables
 - [ ] Merge Feature set and TODO list in readme, I'm just too lazy at this point
+- [ ] Have js not parse entire storage list on every save
+
+
+## Saving Protocol Spec:
+
+### V 1.0
+* `localStorage.list.lists = [{GUID, name, items[]}]`
+* `localStorage.theme = "dark"/"light"`
+* `localStorage.savingProtocolVersion = "1.0"`
