@@ -34,11 +34,29 @@ init();
 
 function init() {
   initTheme();
+  registerDefaultEventListeners();
   loadListDropdown.value = "none";
   loadListButton.disabled = true;
   listNameInput.value = "";
   listEditButton.disabled = true;
   parseStorageList();
+}
+
+function registerDefaultEventListeners() {
+  addToMainListForm.addEventListener("submit", addToMainListFormSubmitListener);
+  addToMainListInput.addEventListener("keyup", addToMainListFormKeyListener)
+  loadListButton.addEventListener("click", loadListButtonClickListener);
+  loadListDropdown.addEventListener("change", loadListDropdownChangeListener);
+  randomDrawButton.addEventListener("click", randomDrawButtonClickListener);
+  listNameInput.addEventListener("keyup", listNameInputKeyListener);
+  listNameInput.addEventListener("input", listNameInputInputListener);
+  saveAbortButton.addEventListener("click", doSaveAbort);
+  saveConfirmButton.addEventListener("click", doSaveConfirm);
+  listEditButton.addEventListener("click", doEditList);
+  editAbortButton.addEventListener("click", doEditAbort);
+  editConfirmButton.addEventListener("click", doEditConfirm);
+  newListButton.addEventListener("click", createNewList);
+  themeToggle.addEventListener("change", toggleTheme);
 }
 
 function initTheme() {
@@ -300,7 +318,7 @@ function show(element) {
   element.classList.remove("hide");
 }
 
-function saveConfirm() {
+function doSaveConfirm() {
   if (!currentListGUID) {
     currentListGUID = crypto.randomUUID();
   }
@@ -312,7 +330,7 @@ function saveConfirm() {
   }
 }
 
-function saveAbort() {
+function doSaveAbort() {
   if (currentListName) {
     listNameInput.value = currentListName;
     listNameInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -350,8 +368,7 @@ function setTheme(mode) {
   document.getElementById("html-element").setAttribute("data-bs-theme", mode);
 }
 
-// These are all event listeners
-themeToggle.addEventListener("change", () => {
+function toggleTheme() {
   let mode;
   if(themeToggle.checked) {
     mode = "dark";
@@ -360,40 +377,30 @@ themeToggle.addEventListener("change", () => {
   }
   localStorage.theme = mode;
   setTheme(mode);
-})
+}
 
-newListButton.addEventListener("click", createNewList);
-
-editConfirmButton.addEventListener("click", () => {
+function doEditConfirm() {
   currentList = workingListCopy;
   currentListName = editListNameInput.value;
   workingListCopy = undefined;
   save(currentListGUID, currentListName);
   showMainListView()
   refreshList();
-});
+}
 
-editAbortButton.addEventListener("click", () => {
+function doEditAbort() {
   workingListCopy = undefined;
   showEditView();
-});
+}
 
-listEditButton.addEventListener("click", () => {
+function doEditList() {
   if (!currentListGUID) { return };
   populateEditView();
   hide(mainListView);
   show(editView);
-});
+}
 
-saveConfirmButton.addEventListener("click", () => {
-  saveConfirm();
-});
-
-saveAbortButton.addEventListener("click", () => {
-  saveAbort();
-});
-
-listNameInput.addEventListener("input", () => {
+function listNameInputInputListener() {
   if (listNameInput.value != currentListName && listNameInput.value) {
     hide(listEditButton);
     show(saveConfirmButton);
@@ -403,15 +410,15 @@ listNameInput.addEventListener("input", () => {
     hide(saveConfirmButton);
     hide(saveAbortButton);
   }
-});
+}
 
-listNameInput.addEventListener("keyup", (ev) => {
+function listNameInputKeyListener(ev) {
   if (ev.key == "Enter") {
     saveConfirm();
   } else if (ev.key == "Escape") { saveAbort() };
-})
+}
 
-randomDrawButton.addEventListener("click", () => {
+function randomDrawButtonClickListener() {
   show(randomOutputField.parentElement);
   switch (randomTypeSelect.value) {
     case "random-true":
@@ -421,30 +428,30 @@ randomDrawButton.addEventListener("click", () => {
       randomOutputField.textContent = drawFromHat();
       break;
   }
-});
+}
 
-loadListDropdown.addEventListener("change", () => {
+function loadListDropdownChangeListener() {
   if (loadListDropdown.value == "none") {
     loadListButton.disabled = true;
   } else {
     loadListButton.disabled = false;
   }
-});
+}
 
-loadListButton.addEventListener("click", () => {
+function loadListButtonClickListener() {
   loadList();
-});
+}
 
-addToMainListInput.addEventListener("keyup", (ev) => {
+function addToMainListFormKeyListener(ev) {
   if (ev.key == "Escape") {
     addToMainListInput.value = "";
   }
-})
+}
 
-addToMainListForm.addEventListener("submit", (e) => {
+function addToMainListFormSubmitListener(e) {
   e.preventDefault();
   addToMainList();
-});
+}
 
 function editSelectAll(event) {
   editCheckAll(event.target.checked);
