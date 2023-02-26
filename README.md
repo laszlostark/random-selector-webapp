@@ -4,21 +4,6 @@
 This very simple SPA was created to create simple lists, save them in browser storage and draw random items from them. That's really all it does.
 
 
-## Feature set:
-- [x] List management
-  - [x] Creating, saving and loading lists
-  - [x] Editing, renaming, deleting lists
-- [ ] Drawing random items from lists
-  - [x] Drawing single random items
-  - [ ] Drawing a sequence of random items
-- [ ] Exporting/importing lists
-  - [ ] csv
-  - [ ] ...?
-- [ ] Design changes
-  - [ ] Animations
-  - [x] Theme toggle
-
-
 ## TODO:
 - [ ] Saving system
   - [ ] Change save() method to accept lists as input
@@ -28,11 +13,15 @@ This very simple SPA was created to create simple lists, save them in browser st
 - [ ] Make everything less dependent on global variables
 - [ ] Merge Feature set and TODO list in readme, I'm just too lazy at this point
 - [ ] Have js not parse entire storage list on every save
+- [ ] - [ ] Exporting/importing lists as .csv and whatnot
+- [ ] Design changes
+  - [ ] Animations
+
 
 
 ## Saving Protocol Spec:
 
-### V 1.0
+### V1.0
 * `localStorage.list.lists = [{GUID, name, items[]}]`
 * `localStorage.theme = "dark"/"light"`
 * `localStorage.savingProtocolVersion = "1.0"`
