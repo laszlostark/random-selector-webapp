@@ -29,7 +29,6 @@ var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
 var workingListCopy;
-var markForDeletion = [];
 
 init();
 
@@ -244,7 +243,6 @@ function refreshEditList() {
     itemNameInput.classList.add("form-control", "rounded");
     itemNameInput.index = i;
     checkbox.classList.add("form-check-input", "rounded", "align-self-center", "ms-2");
-    checkbox.addEventListener("change", editSelectSingle);
     itemNameInput.addEventListener("input", itemNameChange);
     itemIndexLabel.textContent = index;
     checkbox.value = i;
@@ -253,6 +251,7 @@ function refreshEditList() {
     checkbox.type = "checkbox";
     let item = document.createElement("li");
     item.classList.add("list-group-item");
+    item.classList.add("edit-list-item-selectable");
     inputGroup.appendChild(itemIndexLabel);
     inputGroup.appendChild(itemNameInput);
     inputGroup.appendChild(checkbox);
@@ -351,11 +350,6 @@ function doSaveAbort() {
 }
 
 function editCheckAll(value) {
-  if (!value) {
-    markForDeletion = [];
-  } else {
-    markForDeletion = "all";
-  }
   if (!workingListCopy) { return };
   editList.childNodes.forEach((e, i) => {
     if (e.childNodes[0].childNodes[2] && e.childNodes[0].childNodes[2].classList.contains("form-check-input")) {
@@ -467,21 +461,14 @@ function editSelectAll(event) {
   editCheckAll(event.target.checked);
 }
 
-function editSelectSingle(event) {
-  let index = parseInt(event.target.value);
-  if (event.target.checked) {
-    markForDeletion[index] = index;
-  } else {
-    markForDeletion[index] = null;
-  }
-}
-
+//FIXME
 function editDeleteItems() {
-  if(markForDeletion == "all") {
-    workingListCopy = [];
-    refreshEditList();
-    return;
-  }
+  let markForDeletion = [];
+  editList.childNodes.forEach((e, i) => {
+    if(e.classList.contains("edit-list-item-selectable") && e.childNodes[0].childNodes[2].checked) {
+      markForDeletion.push(i);
+    }
+  })
   tempArray = workingListCopy.slice(0);
   markForDeletion.forEach((e) => {
     if (e != null) {
@@ -494,7 +481,6 @@ function editDeleteItems() {
       workingListCopy.push(e);
     }
   })
-  markForDeletion = [];
   refreshEditList();
 }
 
