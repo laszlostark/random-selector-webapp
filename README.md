@@ -11,7 +11,6 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] exclusion of items from randomization without deletion from the list
   - [ ] generating a sequence of random items where each item is aprox. equally often included but not necessarily equally distributed
 - [ ] Make everything less dependent on global variables
-- [ ] Merge Feature set and TODO list in readme, I'm just too lazy at this point
 - [ ] Have js not parse entire storage list on every save
 - [ ] - [ ] Exporting/importing lists as .csv and whatnot
 - [ ] Design changes
