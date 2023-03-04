@@ -3,6 +3,15 @@
 
 This very simple SPA was created to create simple lists, save them in browser storage and draw random items from them. That's really all it does.
 
+## Branch:
+- random-overhaul
+  - [ ] new random generation view
+  - [ ] allow for a sequence of `n` items to be generated with certain distribution algorithm
+  - [ ] make list items selectable for randomization
+- misc
+  - [ ] move all existing random functionality to new random view
+  - [ ] add button to switch main view <> random view
+  - [x] mockup new random view
 
 ## TODO:
 - [ ] Saving system
