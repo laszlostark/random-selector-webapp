@@ -6,6 +6,8 @@ const addToMainListForm = document.getElementById("add-to-main-list-form");
 const randomDialogue = document.getElementById("random-dialogue");
 const randomDrawButton = document.getElementById("random-draw-button");
 const randomOutputField = document.getElementById("random-output-field");
+const randomSequenceOutputField = document.getElementById("random-sequence-output-field");
+const randomOutputTextField = document.getElementById("random-output-text-field");
 const randomTypeSelect = document.getElementById("random-type-select");
 const listNameInput = document.getElementById("list-name-input");
 const listEditButton = document.getElementById("list-edit-button");
@@ -19,6 +21,11 @@ const editListNameInput = document.getElementById("edit-list-name-input");
 const mainListView = document.getElementById("main-list-view");
 const newListButton = document.getElementById("new-list-button");
 const themeToggle = document.getElementById("theme-toggle");
+const randomView = document.getElementById("random-view");
+const openRandomViewButton = document.getElementById("open-random-view-button");
+const closeRandomViewButton = document.getElementById("close-random-view-button");
+const generateSequenceToggle = document.getElementById("generate-sequence-toggle");
+const randomSequenceLengthInput = document.getElementById("random-sequence-length-input");
 
 const SAVING_PROTOCOL_VERSION = "1.0";
 
@@ -29,6 +36,8 @@ var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
 var workingListCopy;
+var currentRandomSequence;
+var currentRandomSequencePosition = 0;
 
 init();
 
@@ -40,7 +49,20 @@ function init() {
   loadListButton.disabled = true;
   listNameInput.value = "";
   listEditButton.disabled = true;
+  randomTypeSelect
+  openRandomViewButton.disabled = true;
+  generateSequenceToggle.checked = false;
   parseStorageList();
+
+
+  //FOR DEVELOPMENT PURPOSES
+  doDevSetup();
+}
+
+function doDevSetup() {
+  loadList(1);
+  showRandomView();
+  showRandomSequence();
 }
 
 function registerDefaultEventListeners() {
@@ -58,14 +80,27 @@ function registerDefaultEventListeners() {
   editConfirmButton.addEventListener("click", doEditConfirm);
   newListButton.addEventListener("click", createNewList);
   themeToggle.addEventListener("change", toggleTheme);
+  openRandomViewButton.addEventListener("click", showRandomView);
+  closeRandomViewButton.addEventListener("click", hideRandomView);
+  generateSequenceToggle.addEventListener("change", toggleRandomSequenceGeneration);
+  randomSequenceLengthInput.addEventListener("keypress", randomSequenceLengthChanged);
 }
 
 function initTheme() {
   themeToggle.checked = localStorage.theme != "light";
-  if(!localStorage.theme) {
+  if (!localStorage.theme) {
     localStorage.theme = "dark";
   }
   setTheme(localStorage.theme);
+}
+
+function generateRandomSequence(amount, randomFunction) {
+  if (!amount || isNaN(amount)) { return };
+  let tempArray = [];
+  for (i = 0; i < amount; i++) {
+    tempArray.push(randomFunction());
+  }
+  return tempArray;
 }
 
 function drawFromHat() {
@@ -100,7 +135,7 @@ function setListNameDisplay(name) {
 
 function findListIndex(UID) {
   for (var i = 0; i < storageList.lists.length; i++) {
-    if (storageList.lists[i].GUID == UID) {
+    if (storageList.lists[i].GUID === UID) {
       return i;
     }
   }
@@ -114,11 +149,11 @@ function saveToLocalStorage(lists) {
 function deleteList(listUID) {
   let temp = storageList.lists.slice(0);
   storageList.lists.forEach((e, i) => {
-    if(e.GUID == listUID) {
+    if (e.GUID === listUID) {
       temp.splice(i);
     }
   })
-  return {lists: temp};
+  return { lists: temp };
 }
 
 function save(listUID, name) {
@@ -126,7 +161,7 @@ function save(listUID, name) {
     currentListGUID = listUID;
   }
   let list = findListIndex(listUID);
-  if (list != undefined && list != NaN) {
+  if (list != undefined && !isNaN(list)) {
     storageList.lists[list].items = currentList;
     storageList.lists[list].name = name;
   } else {
@@ -138,13 +173,15 @@ function save(listUID, name) {
   }
   saveToLocalStorage(storageList);
   let newIndex = findListIndex(currentListGUID);
-  if (newIndex != NaN && newIndex != undefined) {
+  if (!isNaN(newIndex) && newIndex != undefined) {
     currentListIndex = newIndex;
   }
   if (currentListGUID) {
     listEditButton.disabled = false;
+    openRandomViewButton.disabled = false;
   } else {
     listEditButton.disabled = true;
+    openRandomViewButton.disabled = true;
   }
   parseStorageList();
 }
@@ -171,7 +208,7 @@ function addListItem(newItem) {
 }
 
 function addListViewOption(text, value) {
-  if (!text || value == NaN || value == undefined) { return };
+  if (!text || isNaN(value) || value === undefined) { return };
   let listOption = document.createElement('option');
   let optionText = document.createTextNode(text);
   listOption.value = value;
@@ -182,8 +219,10 @@ function addListViewOption(text, value) {
 function refreshList() {
   if (!currentList.GUID) {
     listEditButton.disabled = false;
+    openRandomViewButton.disabled = false;
   } else {
     listEditButton.disabled = true;
+    openRandomViewButton.disabled = true;
   }
   loadListDropdown.value = currentListIndex;
   mainList.textContent = '';
@@ -256,7 +295,7 @@ function refreshEditList() {
     inputGroup.appendChild(itemNameInput);
     inputGroup.appendChild(checkbox);
     item.appendChild(inputGroup);
-    if ((workingListCopy.length - 1) == i) {
+    if ((workingListCopy.length - 1) === i) {
       item.classList.add("rounded-bottom");
     }
     editList.appendChild(item);
@@ -287,9 +326,9 @@ function createNewList() {
 }
 
 function parseStorageList() {
-  if(localStorage.savingProtocolVersion) {
+  if (localStorage.savingProtocolVersion) {
     console.log(`Loaded from local storage with saving protocol version: ${localStorage.savingProtocolVersion}`)
-  } else if(localStorage.list) {
+  } else if (localStorage.list) {
     console.log(`Loaded from local storage with unknown saving protocol version.`);
   } else {
     console.log(`Local storage did not have any lists saved.`);
@@ -297,7 +336,7 @@ function parseStorageList() {
   populateListDefaults();
   if (localStorage.list) {
     storageList = JSON.parse(localStorage.list);
-  } else {return;}
+  } else { return; }
   storageList.lists.forEach((e, index) => {
     addListViewOption(e.name, index);
   })
@@ -374,7 +413,7 @@ function setTheme(mode) {
 
 function toggleTheme() {
   let mode;
-  if(themeToggle.checked) {
+  if (themeToggle.checked) {
     mode = "dark";
   } else {
     mode = "light";
@@ -417,25 +456,24 @@ function listNameInputInputListener() {
 }
 
 function listNameInputKeyListener(ev) {
-  if (ev.key == "Enter") {
+  if (ev.key === "Enter") {
     saveConfirm();
-  } else if (ev.key == "Escape") { saveAbort() };
+  } else if (ev.key === "Escape") { saveAbort() };
 }
 
 function randomDrawButtonClickListener() {
-  show(randomOutputField.parentElement);
   switch (randomTypeSelect.value) {
     case "random-true":
-      randomOutputField.textContent = drawTrueRandom();
+      randomOutputTextField.textContent = drawTrueRandom();
       break;
     case "random-hat":
-      randomOutputField.textContent = drawFromHat();
+      randomOutputTextField.textContent = drawFromHat();
       break;
   }
 }
 
 function loadListDropdownChangeListener() {
-  if (loadListDropdown.value == "none") {
+  if (loadListDropdown.value === "none") {
     loadListButton.disabled = true;
   } else {
     loadListButton.disabled = false;
@@ -447,7 +485,7 @@ function loadListButtonClickListener() {
 }
 
 function addToMainListFormKeyListener(ev) {
-  if (ev.key == "Escape") {
+  if (ev.key === "Escape") {
     addToMainListInput.value = "";
   }
 }
@@ -465,7 +503,7 @@ function editSelectAll(event) {
 function editDeleteItems() {
   let markForDeletion = [];
   editList.childNodes.forEach((e, i) => {
-    if(e.classList.contains("edit-list-item-selectable") && e.childNodes[0].childNodes[2].checked) {
+    if (e.classList.contains("edit-list-item-selectable") && e.childNodes[0].childNodes[2].checked) {
       markForDeletion.push(i);
     }
   })
@@ -490,7 +528,7 @@ function itemNameChange(event) {
 
 function editDeleteList(event) {
   let btn = event.target;
-  if(btn.value == "0") {
+  if (btn.value === "0") {
     btn.classList.remove("btn-warning");
     btn.classList.add("btn-danger");
     btn.textContent = "For realsies?"
@@ -502,4 +540,41 @@ function editDeleteList(event) {
   parseStorageList();
   createNewList();
   showMainListView();
+}
+
+function showRandomView() {
+  hide(mainListView);
+  show(randomView);
+}
+
+function hideRandomView() {
+  hide(randomView);
+  show(mainListView);
+}
+
+function showRandomSequence() {
+  hide(randomDrawButton);
+  randomTypeSelect.classList.add("rounded-end");
+  hide(randomOutputField);
+  show(randomSequenceOutputField);
+}
+
+function hideRandomSequence() {
+  hide(randomSequenceOutputField);
+  randomTypeSelect.classList.remove("rounded-end");
+  show(randomDrawButton);
+  show(randomOutputField);
+}
+
+function toggleRandomSequenceGeneration(event) {
+  let toggle = event.target;
+  if (toggle.checked) {
+    showRandomSequence();
+  } else {
+    hideRandomSequence();
+  }
+}
+
+function randomSequenceLengthChanged(event) {
+  if (isNaN(event.key) || event.key === " ") { event.preventDefault(); }
 }

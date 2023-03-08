@@ -22,14 +22,15 @@
   <!-- Navbar -->
   <div id="navbar" class="navbar border-bottom border-primary justify-content-center rounded-bottom-3">
     <div class="col-2 col-lg-4 col-xxl-5 ps-2">
-      <div class="input-group">
-        <img src="lazrfish logo favicon.png" class="d-none d-md-block" style="height:2.5em; user-select: none; pointer-events: none;">
-        <div class="p-2 ms-2 d-flex">
-            <div class="form-check form-switch m-0 align-self-center">
-              <input type="checkbox" class="form-check-input" id="theme-toggle">
-              <label for="themeToggle" class="form-check-label">
-                <i class="bi d-none d-sm-block bi-moon-stars"></i>
-              </label>
+      <div class="input-group d-flex justify-content-end">
+        <img src="lazrfish logo favicon.png" class="d-none d-md-inline ms-1 me-auto"
+          style="height:2.5em; user-select: none; pointer-events: none;">
+        <div class="p-2 ms-2">
+          <div class="form-check form-switch m-0 align-self-center">
+            <input type="checkbox" class="form-check-input" id="theme-toggle">
+            <label for="theme-toggle" class="form-check-label">
+              <i class="bi d-none d-sm-block bi-moon-stars"></i>
+            </label>
           </div>
         </div>
       </div>
@@ -51,26 +52,9 @@
     </div>
   </div>
 
-  <!-- Main Screen -->
+  <!-- Main List View -->
   <div class="container" id="main-list-view">
     <!-- Random Section -->
-    <div class="row justify-content-center mt-3 hide" id="random-dialogue">
-      <div class="col-11 col-lg-4">
-        <div class="card">
-          <div class="input-group card-body">
-            <select name="" id="random-type-select" class="form-select">
-              <option value="random-true">True random</option>
-              <option value="random-hat">Distributed random</option>
-            </select>
-            <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button"><i
-                class="bi bi-chevron-double-right"></i></button>
-          </div>
-          <div class="card-body text-center align-items-center hide" style="height: 4.5em;">
-            <span id="random-output-field"></span>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Main List -->
     <div class="row justify-content-center mt-3">
@@ -83,8 +67,13 @@
                 <i class="bi bi-check-lg"></i></button>
               <button id="save-abort-button" class="btn btn-warning hide fixed-width-button-sm rounded-end p-0 m-0">
                 <i class="bi bi-arrow-counterclockwise"></i></button>
-              <button id="list-edit-button" class="btn btn-secondary fixed-width-button-lg" disabled type="button">
+              <button id="list-edit-button" class="btn btn-secondary fixed-width-button-sm p-0 m-0" disabled
+                type="button">
                 <i class="bi bi-gear-fill"></i></button>
+              <button id="open-random-view-button" class="btn btn-secondary fixed-width-button-sm p-0 m-0 rounded-end"
+                disabled>
+                <i class="bi bi-shuffle"></i>
+              </button>
             </div>
             <form autocomplete="off" id="add-to-main-list-form" class="input-group">
               <input type="text" placeholder="Add item..." class="form-control ps-3" id="add-to-main-list-input">
@@ -99,8 +88,70 @@
     </div>
   </div>
 
+  <!-- Random View -->
+  <div class="container hide" id="random-view">
+    <div class="row justify-content-center mt-3">
+      <div class="col-11 col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-end">
+              <div class="form-check form-switch m-0 me-auto align-self-center">
+                <input type="checkbox" class="form-check-input" id="generate-sequence-toggle">
+                <label for="generate-sequence-toggle" class="form-check-label">
+                  <i class="bi d-none d-sm-block bi-list-ul"></i>
+                </label>
+              </div>
+              <button id="close-random-view-button" class="btn btn-secondary fixed-width-button-lg">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+            <div class="input-group mt-2">
+              <select name="" id="random-type-select" class="form-select ps-3">
+                <option value="random-hat">Distributed random</option>
+                <option value="random-true">True random</option>
+              </select>
+              <button class="btn btn-primary fixed-width-button-lg" id="random-draw-button">
+                <i class="bi bi-shuffle"></i>
+              </button>
+            </div>
+            <!-- Random Output Field -->
+            <div class="mt-2 d-flex justify-content-center" style="height: 4em;" id="random-output-field">
+              <span class="d-inline-block align-self-center fs-4 fw-bold" id="random-output-text-field">
 
-  <!-- Editing Dialogue -->
+              </span>
+            </div>
+            <!-- Random Sequence Output Field -->
+            <div class="mt-2 hide justify-content-center" id="random-sequence-output-field">
+              <div class="input-group w-50 mx-auto">
+              <input type="number" min="1" value="1" id="random-sequence-length-input" class="form-control">
+              <button class="btn btn-primary fixed-width-button-lg">
+                <i class="bi bi-shuffle"></i>
+              </button>
+            </div>
+              <div class="d-flex mt-2 align-self-end">
+                <ul class="ms-auto list-unstyled text-center">
+                  <li id="sequence-output-last" class="align-self-start">item 1</span>
+                  <li id="sequence-output-current" class="fw-bold fs-4 align-self-center">item 2</span>
+                  <li id="sequence-output-next" class="align-self-end">item 3</span>
+                </ul>
+                <div class="ms-auto btn-group-vertical fixed-width-button-lg">
+                  <button class="btn btn-primary">
+                    <i class="bi bi-arrow-up-circle"></i>
+                  </button>
+                  <button class="btn btn-primary">
+                    <i class="bi bi-arrow-down-circle"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editing View -->
   <div class="container hide" id="edit-view">
     <div class="row justify-content-center mt-3">
       <div class="col-11 col-lg-4">
