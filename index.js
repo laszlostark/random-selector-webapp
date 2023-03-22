@@ -7,6 +7,8 @@ const randomDialogue = document.getElementById("random-dialogue");
 const randomDrawButton = document.getElementById("random-draw-button");
 const randomOutputField = document.getElementById("random-output-field");
 const randomSequenceOutputField = document.getElementById("random-sequence-output-field");
+const randomSequencePositionInput = document.getElementById("random-sequence-position-input");
+const sequenceOutput = document.getElementById("sequence-output");
 const randomOutputTextField = document.getElementById("random-output-text-field");
 const randomTypeSelect = document.getElementById("random-type-select");
 const listNameInput = document.getElementById("list-name-input");
@@ -26,6 +28,9 @@ const openRandomViewButton = document.getElementById("open-random-view-button");
 const closeRandomViewButton = document.getElementById("close-random-view-button");
 const generateSequenceToggle = document.getElementById("generate-sequence-toggle");
 const randomSequenceLengthInput = document.getElementById("random-sequence-length-input");
+const randomSequenceDrawButton = document.getElementById("random-sequence-draw-button");
+const randomSequenceNextButton = document.getElementById("random-sequence-next-button");
+const randomSequencePrevButton = document.getElementById("random-sequence-prev-button");
 
 const SAVING_PROTOCOL_VERSION = "1.0";
 
@@ -36,7 +41,7 @@ var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
 var workingListCopy;
-var currentRandomSequence;
+var currentRandomSequence = [];
 var currentRandomSequencePosition = 0;
 
 init();
@@ -52,17 +57,16 @@ function init() {
   randomTypeSelect
   openRandomViewButton.disabled = true;
   generateSequenceToggle.checked = false;
+  randomSequenceLengthInput.value = "1";
+  randomSequencePositionInput.value = "";
   parseStorageList();
-
 
   //FOR DEVELOPMENT PURPOSES
   doDevSetup();
 }
 
 function doDevSetup() {
-  loadList(1);
-  showRandomView();
-  showRandomSequence();
+
 }
 
 function registerDefaultEventListeners() {
@@ -83,7 +87,12 @@ function registerDefaultEventListeners() {
   openRandomViewButton.addEventListener("click", showRandomView);
   closeRandomViewButton.addEventListener("click", hideRandomView);
   generateSequenceToggle.addEventListener("change", toggleRandomSequenceGeneration);
-  randomSequenceLengthInput.addEventListener("keypress", randomSequenceLengthChanged);
+  randomSequenceDrawButton.addEventListener("click", drawRandomSequence);
+  randomSequencePositionInput.addEventListener("keypress", randomSequencePositionInputChanged);
+  randomSequencePositionInput.addEventListener("change", randomSequencePositionEntered);
+  randomSequenceNextButton.addEventListener("click", randomSequenceNext);
+  randomSequencePrevButton.addEventListener("click", randomSequencePrev);
+  randomSequenceLengthInput.parentElement.addEventListener("keypress", randomSequenceSubmit);
 }
 
 function initTheme() {
@@ -139,6 +148,27 @@ function findListIndex(UID) {
       return i;
     }
   }
+}
+
+function updateRandomSequenceDisplay() {
+  if (!currentRandomSequence.length > 0) { return }
+  let last;
+  let current;
+  let next;
+  sequenceOutput.childNodes[1].textContent = "";
+  sequenceOutput.childNodes[2].textContent = "";
+  sequenceOutput.childNodes[3].textContent = "";
+  if (currentRandomSequencePosition > 0) {
+    last = `${currentRandomSequencePosition}. ${currentRandomSequence[currentRandomSequencePosition - 1]}`
+    sequenceOutput.childNodes[1].textContent = last;
+  }
+  if (currentRandomSequencePosition < currentRandomSequence.length - 1) {
+    next = `${currentRandomSequencePosition + 2}. ${currentRandomSequence[currentRandomSequencePosition + 1]}`
+    sequenceOutput.childNodes[3].textContent = next;
+  }
+  current = `${currentRandomSequencePosition + 1}. ${currentRandomSequence[currentRandomSequencePosition]}`
+  sequenceOutput.childNodes[2].textContent = current;
+  randomSequencePositionInput.value = currentRandomSequencePosition + 1;
 }
 
 function saveToLocalStorage(lists) {
@@ -200,11 +230,8 @@ function addToMainList() {
 function addListItem(newItem) {
   if (!newItem) { return };
   currentList.push(newItem);
-  let listItem = document.createElement('li');
-  listItem.classList.add("list-group-item");
-  let textNode = document.createTextNode(`${currentList.length}. ${newItem}`);
-  listItem.appendChild(textNode);
-  mainList.appendChild(listItem);
+  refreshList();
+
 }
 
 function addListViewOption(text, value) {
@@ -217,7 +244,7 @@ function addListViewOption(text, value) {
 }
 
 function refreshList() {
-  if (!currentList.GUID) {
+  if (currentListGUID) {
     listEditButton.disabled = false;
     openRandomViewButton.disabled = false;
   } else {
@@ -321,8 +348,12 @@ function createNewList() {
   currentListName = "";
   currentListGUID = undefined;
   loadListDropdown.value = "none";
+  hide(saveAbortButton);
+  hide(saveConfirmButton);
+  show(listEditButton);
+  show(openRandomViewButton);
   refreshList();
-  hide(randomDialogue);
+  hideRandomView();
 }
 
 function parseStorageList() {
@@ -348,11 +379,16 @@ function loadList(index) {
   if (index === undefined) {
     index = loadListDropdown.value;
   }
+  hide(randomView);
+  showMainListView();
   currentList = storageList.lists[index].items;
   currentListName = storageList.lists[index].name;
   currentListGUID = storageList.lists[index].GUID;
-  if (currentList.length > 0) { show(randomDialogue) };
   currentListIndex = index;
+  show(listEditButton);
+  show(openRandomViewButton);
+  hide(saveConfirmButton);
+  hide(saveAbortButton);
   refreshList();
 }
 
@@ -367,9 +403,10 @@ function show(element) {
 }
 
 function doSaveConfirm() {
-  if (!currentListGUID) {
+  if (!currentListGUID || currentListGUID === undefined) {
     currentListGUID = crypto.randomUUID();
   }
+
   if (listNameInput.value) {
     currentListName = listNameInput.value;
     save(currentListGUID, currentListName);
@@ -446,10 +483,12 @@ function doEditList() {
 function listNameInputInputListener() {
   if (listNameInput.value != currentListName && listNameInput.value) {
     hide(listEditButton);
+    hide(openRandomViewButton);
     show(saveConfirmButton);
     show(saveAbortButton);
   } else {
     show(listEditButton);
+    show(openRandomViewButton);
     hide(saveConfirmButton);
     hide(saveAbortButton);
   }
@@ -575,6 +614,50 @@ function toggleRandomSequenceGeneration(event) {
   }
 }
 
-function randomSequenceLengthChanged(event) {
-  if (isNaN(event.key) || event.key === " ") { event.preventDefault(); }
+function drawRandomSequence() {
+  let randFunc;
+  if (randomTypeSelect.value === "random-true") {
+    randFunc = drawTrueRandom;
+  } else {
+    randFunc = drawFromHat;
+  }
+  currentRandomSequence = generateRandomSequence(randomSequenceLengthInput.value, randFunc);
+  updateRandomSequenceDisplay();
+}
+
+function randomSequencePositionInputChanged(event) {
+  if (isNaN(event.key)) {
+    event.preventDefault();
+  }
+}
+
+function randomSequencePositionEntered(event) {
+  let targetIndex = event.target.value - 1;
+  if (targetIndex > currentRandomSequence.length - 1 || targetIndex < 0) {
+    event.target.value = currentRandomSequencePosition + 1;
+  } else {
+    currentRandomSequencePosition = targetIndex;
+    updateRandomSequenceDisplay();
+  }
+}
+
+function randomSequenceNext() {
+  if (currentRandomSequencePosition < currentRandomSequence.length - 1) {
+    currentRandomSequencePosition++;
+  }
+  updateRandomSequenceDisplay();
+}
+
+function randomSequencePrev() {
+  if (currentRandomSequencePosition - 1 >= 0) {
+    currentRandomSequencePosition--;
+  }
+  updateRandomSequenceDisplay();
+}
+
+function randomSequenceSubmit(event) {
+  console.log(event.key)
+  if (event.key === "Enter") {
+    drawRandomSequence();
+  }
 }

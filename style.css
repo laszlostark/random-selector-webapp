@@ -3,11 +3,15 @@
 }
 
 .fixed-width-button-lg {
-  width: 4em;
+  width: 6em;
+}
+
+.fixed-width-button-md {
+  width: 4.5em;
 }
 
 .fixed-width-button-sm {
-  width: 2em;
+  width: 3em;
 }
 
 .hide {
