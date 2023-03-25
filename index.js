@@ -304,7 +304,7 @@ function refreshEditList() {
     let itemNameInput = document.createElement("input");
     let itemIndexLabel = document.createElement("div");
     let inputGroup = document.createElement("div");
-    itemIndexLabel.classList.add("align-self-center", "me-2");
+    itemIndexLabel.classList.add("align-self-center", "me-2", "no-select");
     inputGroup.classList.add("input-group");
     itemNameInput.classList.add("form-control", "rounded");
     itemNameInput.index = i;
@@ -622,6 +622,8 @@ function drawRandomSequence() {
     randFunc = drawFromHat;
   }
   currentRandomSequence = generateRandomSequence(randomSequenceLengthInput.value, randFunc);
+  currentRandomSequencePosition = 0;
+  randomSequencePositionInput.value = 0;
   updateRandomSequenceDisplay();
 }
 

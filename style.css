@@ -2,6 +2,11 @@
   width: 8em;
 }
 
+.no-select {
+  user-select: none;
+  pointer-events: none;
+}
+
 .fixed-width-button-lg {
   width: 6em;
 }
