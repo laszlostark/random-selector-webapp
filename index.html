@@ -23,8 +23,7 @@
   <div id="navbar" class="navbar border-bottom border-primary justify-content-center rounded-bottom-3">
     <div class="col-2 col-lg-4 col-xxl-5 ps-2">
       <div class="input-group d-flex justify-content-end">
-        <img src="lazrfish logo favicon.png" class="no-select d-none d-md-inline ms-1 me-auto"
-          style="height:2.5em;">
+        <img src="lazrfish logo favicon.png" class="no-select d-none d-md-inline ms-1 me-auto" style="height:2.5em;">
         <div class="p-2 ms-2">
           <div class="form-check form-switch m-0 align-self-center">
             <input type="checkbox" class="form-check-input" id="theme-toggle">
@@ -62,8 +61,8 @@
               <input id="list-name-input" type="text" class="form-control" placeholder="List name...">
               <button id="save-abort-button" class="btn btn-warning hide fixed-width-button-sm p-0 m-0">
                 <i class="bi bi-x-circle"></i></button>
-                <button id="save-confirm-button" class="btn btn-success hide fixed-width-button-sm rounded-end p-0 m-0">
-                  <i class="bi bi-check-lg"></i></button>
+              <button id="save-confirm-button" class="btn btn-success hide fixed-width-button-sm rounded-end p-0 m-0">
+                <i class="bi bi-check-lg"></i></button>
               <button id="list-edit-button" class="btn btn-secondary fixed-width-button-sm p-0 m-0" disabled
                 type="button">
                 <i class="bi bi-gear-fill"></i></button>
@@ -123,7 +122,8 @@
                 <span class="w-75">
                   <input type="number" min="1" value="1" id="random-sequence-length-input">
                 </span>
-                <button id="random-sequence-draw-button" class="ms-2 rounded btn btn-primary fixed-width-button-md ms-auto">
+                <button id="random-sequence-draw-button"
+                  class="ms-2 rounded btn btn-primary fixed-width-button-md ms-auto">
                   <i class="bi bi-shuffle"></i>
                 </button>
               </div>
@@ -146,6 +146,19 @@
               </div>
 
             </div>
+          </div>
+
+        </div>
+        <div class="card mt-3">
+          <div class="card-body">
+
+            <div class="d-flex">
+              <span class="align-self-center mx-auto mb-2">
+                Select items for randomization
+              </span>
+              <input type="checkbox" checked="true" class="form-check-input me-3" id="random-include-select-all-checkbox">
+            </div>
+            <ul class="list-group" id="random-include-select-list"></ul>
           </div>
         </div>
       </div>

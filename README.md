@@ -9,8 +9,8 @@ This very simple SPA was created to create simple lists, save them in browser st
   - [ ] allow for a sequence of `n` items to be generated with certain distribution algorithm
   - [ ] make list items selectable for randomization
   - misc
-    - [ ] move all existing random functionality to new random view
-    - [ ] add button to switch main view <> random view
+    - [x] move all existing random functionality to new random view
+    - [x] add button to switch main view <> random view
     - [x] mockup new random view
 
 ## TODO:
@@ -25,12 +25,10 @@ This very simple SPA was created to create simple lists, save them in browser st
 - [ ] Design changes
   - [ ] Animations
 
-## FIXME:
-- [ ] For whatever reason you can't create new lists on mobile and only on mobile
 
 ## Dependencies:
 This webapp now requires [bootstrap-input-spinner](https://github.com/shaack/bootstrap-input-spinner) by shaack to be cloned into `dependencies/bootstrap-input-spinner`.
-
+ 
 
 ## Saving Protocol Spec:
 

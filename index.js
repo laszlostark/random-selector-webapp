@@ -31,6 +31,8 @@ const randomSequenceLengthInput = document.getElementById("random-sequence-lengt
 const randomSequenceDrawButton = document.getElementById("random-sequence-draw-button");
 const randomSequenceNextButton = document.getElementById("random-sequence-next-button");
 const randomSequencePrevButton = document.getElementById("random-sequence-prev-button");
+const randomIncludeSelectList = document.getElementById("random-include-select-list");
+const randomIncludeSelectAllCheckbox = document.getElementById("random-include-select-all-checkbox");
 
 const SAVING_PROTOCOL_VERSION = "1.0";
 
@@ -41,6 +43,7 @@ var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
 var workingListCopy;
+var currentRandomSelection = [];
 var currentRandomSequence = [];
 var currentRandomSequencePosition = 0;
 
@@ -66,7 +69,8 @@ function init() {
 }
 
 function doDevSetup() {
-
+  loadList(0);
+  showRandomView();
 }
 
 function registerDefaultEventListeners() {
@@ -93,6 +97,7 @@ function registerDefaultEventListeners() {
   randomSequenceNextButton.addEventListener("click", randomSequenceNext);
   randomSequencePrevButton.addEventListener("click", randomSequencePrev);
   randomSequenceLengthInput.parentElement.addEventListener("keypress", randomSequenceSubmit);
+  randomIncludeSelectAllCheckbox.addEventListener("click", randomIncludeSelectAll)
 }
 
 function initTheme() {
@@ -114,20 +119,23 @@ function generateRandomSequence(amount, randomFunction) {
 
 function drawFromHat() {
   if (!currentHat) {
-    currentHat = currentList.slice(0);
-  } else if (!currentList) { return };
+    currentHat = currentRandomSelection.slice(0);
+  } else if (!currentRandomSelection) { return }
   let randomNum = randomInt(currentHat.length);
   let randomItem = currentHat[randomNum];
   currentHat.splice(randomNum, 1);
   if (currentHat.length < 1) {
-    currentHat = currentList.slice(0);
+    currentHat = currentRandomSelection.slice(0);
   }
   return randomItem;
 }
 
 
 function drawTrueRandom() {
-  return currentList[randomInt(currentList.length)];
+  if(!currentRandomSelection) {return}
+  let index = randomInt(currentRandomSelection.length);
+  let item = currentRandomSelection[index];
+  return item;
 }
 
 function randomInt(max) {
@@ -538,7 +546,6 @@ function editSelectAll(event) {
   editCheckAll(event.target.checked);
 }
 
-//FIXME
 function editDeleteItems() {
   let markForDeletion = [];
   editList.childNodes.forEach((e, i) => {
@@ -582,6 +589,7 @@ function editDeleteList(event) {
 }
 
 function showRandomView() {
+  populateRandomItemSelect();
   hide(mainListView);
   show(randomView);
 }
@@ -596,6 +604,41 @@ function showRandomSequence() {
   randomTypeSelect.classList.add("rounded-end");
   hide(randomOutputField);
   show(randomSequenceOutputField);
+}
+
+function populateRandomItemSelect() {
+  currentRandomSelection = currentList.slice(0);
+  randomIncludeSelectList.textContent = "";
+  randomIncludeSelectAllCheckbox.checked = true;
+  currentList.forEach((e, i) => {
+    let item = document.createElement("li");
+    let index = `${parseInt(i) + 1}.`;
+    let text = e;
+    let checkbox = document.createElement("input");
+    let itemIndexLabel = document.createElement("div");
+    let inputGroup = document.createElement("div");
+    itemIndexLabel.classList.add("align-self-center", "no-select", "me-2");
+    inputGroup.classList.add("input-group", "my-1");
+    checkbox.classList.add("form-check-input", "rounded", "align-self-center", "ms-auto");
+    checkbox.addEventListener("click", randomIncludeItemClicked)
+    itemIndexLabel.textContent = index;
+    checkbox.value = i;
+    itemLabel = document.createElement("span");
+    itemLabel.classList.add("no-select");
+    itemLabel.textContent = text;
+    checkbox.type = "checkbox";
+    checkbox.checked = "true";
+    item.classList.add("list-group-item");
+    inputGroup.appendChild(itemIndexLabel);
+    inputGroup.appendChild(itemLabel);
+    inputGroup.appendChild(checkbox);
+    item.appendChild(inputGroup);
+    if ((currentList.length - 1) === i) {
+      item.classList.add("rounded-bottom");
+    }
+    randomIncludeSelectList.appendChild(item);
+
+  })
 }
 
 function hideRandomSequence() {
@@ -661,5 +704,30 @@ function randomSequenceSubmit(event) {
   console.log(event.key)
   if (event.key === "Enter") {
     drawRandomSequence();
+  }
+}
+
+function randomIncludeSelectAll(el) {
+  let value = el.target.checked;
+  if(!value) {
+    currentRandomSelection = [];
+  } else {
+    currentRandomSelection = currentList.slice(0);
+  }
+  randomIncludeSelectList.childNodes.forEach((e) => {
+    let checkbox = e.childNodes[0].childNodes[2];
+    if(checkbox) {
+      checkbox.checked = value;
+    }
+  })
+}
+
+function randomIncludeItemClicked(e) {
+  let index = parseInt(e.target.parentElement.childNodes[0].textContent.split(".")[0]) - 1;
+  let value = e.target.checked;
+  if(value) {
+    currentRandomSelection.splice(index, 0, currentList[index]);
+  } else {
+    currentRandomSelection.splice(index, 1);
   }
 }
