@@ -42,6 +42,7 @@ var currentListName = "";
 var currentListGUID;
 var currentListIndex = "none";
 var currentHat;
+var currentHatSize;
 var workingListCopy;
 var currentRandomSelection = [];
 var currentRandomSequence = [];
@@ -118,14 +119,16 @@ function generateRandomSequence(amount, randomFunction) {
 }
 
 function drawFromHat() {
-  if (!currentHat) {
+  if (!currentHat || currentHatSize != currentRandomSelection.length) {
     currentHat = currentRandomSelection.slice(0);
+    currentHatSize = currentRandomSelection.length;
   } else if (!currentRandomSelection) { return }
   let randomNum = randomInt(currentHat.length);
   let randomItem = currentHat[randomNum];
   currentHat.splice(randomNum, 1);
   if (currentHat.length < 1) {
     currentHat = currentRandomSelection.slice(0);
+    currentHatSize = currentRandomSelection.length;
   }
   return randomItem;
 }
@@ -504,8 +507,8 @@ function listNameInputInputListener() {
 
 function listNameInputKeyListener(ev) {
   if (ev.key === "Enter") {
-    saveConfirm();
-  } else if (ev.key === "Escape") { saveAbort() };
+    doSaveConfirm();
+  } else if (ev.key === "Escape") { doSaveAbort() };
 }
 
 function randomDrawButtonClickListener() {
