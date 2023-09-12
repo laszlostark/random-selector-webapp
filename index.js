@@ -58,7 +58,7 @@ function init() {
   loadListButton.disabled = true;
   listNameInput.value = "";
   listEditButton.disabled = true;
-  randomTypeSelect
+  randomTypeSelect.value = "random-hat";
   openRandomViewButton.disabled = true;
   generateSequenceToggle.checked = false;
   randomSequenceLengthInput.value = "1";
@@ -135,7 +135,7 @@ function drawFromHat() {
 
 
 function drawTrueRandom() {
-  if(!currentRandomSelection) {return}
+  if (!currentRandomSelection) { return }
   let index = randomInt(currentRandomSelection.length);
   let item = currentRandomSelection[index];
   return item;
@@ -315,6 +315,8 @@ function refreshEditList() {
     let itemNameInput = document.createElement("input");
     let itemIndexLabel = document.createElement("div");
     let inputGroup = document.createElement("div");
+    let item = document.createElement("li");
+    item.addEventListener("click", editListItemClickListener)
     itemIndexLabel.classList.add("align-self-center", "me-2", "no-select");
     inputGroup.classList.add("input-group");
     itemNameInput.classList.add("form-control", "rounded");
@@ -326,7 +328,6 @@ function refreshEditList() {
     itemNameInput.value = text;
     itemNameInput.type = "text";
     checkbox.type = "checkbox";
-    let item = document.createElement("li");
     item.classList.add("list-group-item");
     item.classList.add("edit-list-item-selectable");
     inputGroup.appendChild(itemIndexLabel);
@@ -359,6 +360,7 @@ function createNewList() {
   currentListName = "";
   currentListGUID = undefined;
   loadListDropdown.value = "none";
+  loadListButton.disabled = true;
   hide(saveAbortButton);
   hide(saveConfirmButton);
   show(listEditButton);
@@ -445,7 +447,7 @@ function editCheckAll(value) {
   });
 }
 
-function showEditView() {
+function hideEditView() {
   hide(editView);
   show(mainListView);
 }
@@ -712,23 +714,38 @@ function randomSequenceSubmit(event) {
 
 function randomIncludeSelectAll(el) {
   let value = el.target.checked;
-  if(!value) {
+  if (!value) {
     currentRandomSelection = [];
   } else {
     currentRandomSelection = currentList.slice(0);
   }
   randomIncludeSelectList.childNodes.forEach((e) => {
     let checkbox = e.childNodes[0].childNodes[2];
-    if(checkbox) {
+    if (checkbox) {
       checkbox.checked = value;
     }
   })
 }
 
+function editListItemClickListener(e) {
+  let checkbox;
+  console.log(e.target.nodeName)
+  if(e.target.nodeName === "div" && !e.target.nodeName.classList.contains("input-group")) {
+    checkbox = e.target.parentElement.childNodes[2];
+  } else if (e.target.nodeName === "DIV" && e.target.classList.contains("input-group")) {
+    checkbox = e.target.childNodes[2];
+  } else if (e.target.nodeName === "LI") {
+    checkbox = e.target.childNodes[0].childNodes[2];
+  } else {
+    return;
+  }
+  checkbox.checked = !checkbox.checked;
+}
+
 function randomIncludeItemClicked(e) {
   let index = parseInt(e.target.parentElement.childNodes[0].textContent.split(".")[0]) - 1;
   let value = e.target.checked;
-  if(value) {
+  if (value) {
     currentRandomSelection.splice(index, 0, currentList[index]);
   } else {
     currentRandomSelection.splice(index, 1);
